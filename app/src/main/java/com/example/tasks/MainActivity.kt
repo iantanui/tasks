@@ -4,11 +4,13 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -50,18 +52,35 @@ class MainActivity : ComponentActivity() {
 fun TaskApp() {
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text(text = "Tasks") },
-                actions = {
-                    IconButton(onClick = { /*TODO*/ }) {
-                        // Icon for google profile
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+            ) {
+
+                TopAppBar(
+                    title = {
+                        Text(
+                            text = "Tasks"
+                        )
+                    },
+                    actions = {
+                        IconButton(onClick = { /*TODO*/ }) {
+                            // Icon for google profile
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle,
+                                contentDescription = "Profile"
+                            )
+                        }
                     }
-                }
-            )
+                )
+
+                TasksList()
+            }
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { /* Handle add task*/ },
-                modifier = Modifier.padding(16.dp)
+                modifier = Modifier.padding(8.dp)
             ) {
                 Icon(
                     imageVector = Icons.Default.Add,
@@ -70,9 +89,7 @@ fun TaskApp() {
             }
         },
         floatingActionButtonPosition = FabPosition.End,
-        content = {
-            TasksList()
-        }
+        content = { }
     )
 }
 
@@ -81,7 +98,7 @@ fun TasksList() {
     val tasks = listOf("Task 1", "Task 2", "Task 3")
     LazyColumn(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxWidth()
             .padding(8.dp)
     ) {
         items(tasks.size) { index ->
