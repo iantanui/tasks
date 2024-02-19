@@ -4,11 +4,18 @@ import android.annotation.SuppressLint
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
@@ -32,6 +39,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
@@ -87,7 +95,7 @@ fun TaskApp() {
                 )
                 Divider(color = Color.Gray, thickness = 1.dp) // Divider line
 
-                TasksList(tasks = tasks)
+                TasksList(tasks = tasks, onTaskCompleted = { /* Implement task completion logic */})
             }
         },
         floatingActionButton = {
@@ -151,32 +159,51 @@ fun AddTaskDialog(onTaskAdded: (String) -> Unit, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun TasksList(tasks: List<String>) {
+fun TasksList(tasks: List<String>, onTaskCompleted: (String) -> Unit) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
         items(tasks.size) { index ->
-            TaskItem(taskName = tasks[index])
+            TaskItem(
+                taskName = tasks[index],
+                onTaskCompleted =  onTaskCompleted
+            )
         }
     }
 }
 
 @Composable
-fun TaskItem(taskName: String) {
+fun TaskItem(taskName: String, onTaskCompleted: (String) -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 8.dp)
+            .padding(8.dp)
     ) {
-        Text(
-            text = taskName,
-            modifier = Modifier.padding(16.dp),
-            style = MaterialTheme.typography.bodyMedium
-        )
+        Row(
+            modifier = Modifier
+                .padding(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+        ) {
+
+            Box(
+                modifier = Modifier
+                    .clickable { onTaskCompleted(taskName) }
+                    .size(20.dp)
+                    .background(color = Color.Transparent, shape = CircleShape)
+                    .border(width = 1.dp, color = Color.Gray, shape = CircleShape)
+            )
+
+            Text(
+                text = taskName,
+                modifier = Modifier.padding(16.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
+        }
     }
 }
+
 
 @Preview(showBackground = true)
 @Composable
