@@ -12,6 +12,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
@@ -22,8 +24,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -50,6 +57,9 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskApp() {
+    var tasks by remember { mutableStateOf(listOf("Task1", "Task 2", "Tsk 3")) }
+    var isAddTaskDialogOpen by remember { mutableStateOf(false) }
+
     Scaffold(
         topBar = {
             Column(
@@ -74,12 +84,15 @@ fun TaskApp() {
                     }
                 )
 
-                TasksList()
+                TasksList(tasks = tasks)
             }
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /* Handle add task*/ },
+                onClick = {
+                    // Handle add task
+                    isAddTaskDialogOpen = true
+                },
                 modifier = Modifier.padding(8.dp)
             ) {
                 Icon(
@@ -89,13 +102,52 @@ fun TaskApp() {
             }
         },
         floatingActionButtonPosition = FabPosition.End,
-        content = { }
+        content = {
+            if (isAddTaskDialogOpen) {
+                AddTaskDialog(
+                    onTaskAdded = { newTask ->
+                        tasks = tasks + newTask
+                        isAddTaskDialogOpen = false
+                    },
+//                    onDismiss = { isAddTaskDialogOpen = false }
+
+                )
+            }
+        }
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun AddTaskDialog(onTaskAdded: (String) -> Unit) {
+    var newTaskText by remember { mutableStateOf("") }
+
+    AlertDialog(
+        onDismissRequest = { /*TODO*/ },
+        title = { Text(text = "Add Task") },
+        text = {
+            TextField(
+                value = newTaskText,
+                onValueChange = { newTaskText = it },
+                label = { Text(text = "Task Name") }
+            )
+        },
+        confirmButton = {
+            Button(
+                onClick = {
+                    /*TODO*/
+                    onTaskAdded(newTaskText)
+                    newTaskText = ""
+                }
+            ) {
+                Text("Add")
+            }
+        }
     )
 }
 
 @Composable
-fun TasksList() {
-    val tasks = listOf("Task 1", "Task 2", "Task 3")
+fun TasksList(tasks: List<String>) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
