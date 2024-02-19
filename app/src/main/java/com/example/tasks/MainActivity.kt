@@ -109,7 +109,7 @@ fun TaskApp() {
             if (isAddTaskDialogOpen) {
                 AddTaskDialog(
                     onTaskAdded = { newTask ->
-                        tasks = tasks + newTask
+                        tasks = listOf(newTask) + tasks
                         isAddTaskDialogOpen = false
                     },
                     onDismiss = { isAddTaskDialogOpen = false }
