@@ -109,7 +109,7 @@ fun TaskApp() {
                         tasks = tasks + newTask
                         isAddTaskDialogOpen = false
                     },
-//                    onDismiss = { isAddTaskDialogOpen = false }
+                    onDismiss = { isAddTaskDialogOpen = false }
 
                 )
             }
@@ -119,7 +119,7 @@ fun TaskApp() {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AddTaskDialog(onTaskAdded: (String) -> Unit) {
+fun AddTaskDialog(onTaskAdded: (String) -> Unit, onDismiss: () -> Unit) {
     var newTaskText by remember { mutableStateOf("") }
 
     AlertDialog(
@@ -138,6 +138,7 @@ fun AddTaskDialog(onTaskAdded: (String) -> Unit) {
                     /*TODO*/
                     onTaskAdded(newTaskText)
                     newTaskText = ""
+                    onDismiss()
                 }
             ) {
                 Text("Add")
