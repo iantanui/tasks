@@ -57,7 +57,7 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskApp() {
-    var tasks by remember { mutableStateOf(listOf("Task1", "Task 2", "Tsk 3")) }
+    var tasks by remember { mutableStateOf(listOf<String>()) }
     var isAddTaskDialogOpen by remember { mutableStateOf(false) }
 
     Scaffold(
