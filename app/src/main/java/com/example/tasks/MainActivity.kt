@@ -67,8 +67,9 @@ class MainActivity : ComponentActivity() {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskApp() {
-    var tasks by remember { mutableStateOf(listOf<String>()) }
     var isAddTaskDialogOpen by remember { mutableStateOf(false) }
+    var completedTasks by remember { mutableStateOf(listOf("helo", "jhhdgyg")) }
+    var incompleteTasks by remember { mutableStateOf(listOf<String>()) }
 
     Scaffold(
         topBar = {
@@ -93,9 +94,12 @@ fun TaskApp() {
                         }
                     }
                 )
+
                 Divider(color = Color.Gray, thickness = 1.dp) // Divider line
 
-                TasksList(tasks = tasks, onTaskCompleted = { /* Implement task completion logic */})
+                TasksList(
+                    tasks = incompleteTasks,
+                    onTaskCompleted = { /* Implement task completion logic */ })
             }
         },
         floatingActionButton = {
@@ -117,12 +121,31 @@ fun TaskApp() {
             if (isAddTaskDialogOpen) {
                 AddTaskDialog(
                     onTaskAdded = { newTask ->
-                        tasks = listOf(newTask) + tasks
+                        incompleteTasks = listOf(newTask) + incompleteTasks
                         isAddTaskDialogOpen = false
                     },
                     onDismiss = { isAddTaskDialogOpen = false }
 
                 )
+            }
+            // Display incomplete
+            TasksList(tasks = incompleteTasks, onTaskCompleted = { taskName ->
+                val taskToMove = incompleteTasks.find { it == taskName }
+                if (taskToMove != null) {
+                    incompleteTasks = incompleteTasks - taskToMove
+                    completedTasks = listOf(taskName) + completedTasks
+                }
+            })
+
+            if (completedTasks.isNotEmpty()) {
+                Column {
+                    Text(
+                        text = "Completed Tasks",
+                        style = MaterialTheme.typography.displayMedium,
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                    )
+                    TasksList(tasks = completedTasks, onTaskCompleted = {})
+                }
             }
         }
     )
@@ -168,7 +191,7 @@ fun TasksList(tasks: List<String>, onTaskCompleted: (String) -> Unit) {
         items(tasks.size) { index ->
             TaskItem(
                 taskName = tasks[index],
-                onTaskCompleted =  onTaskCompleted
+                onTaskCompleted = onTaskCompleted
             )
         }
     }
