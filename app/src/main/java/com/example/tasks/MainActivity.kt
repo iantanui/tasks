@@ -20,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -71,6 +73,7 @@ fun TaskApp() {
     var isAddTaskDialogOpen by remember { mutableStateOf(false) }
     var completedTasks by remember { mutableStateOf(listOf("helo", "jhhdgyg")) }
     var incompleteTasks by remember { mutableStateOf(listOf("1st", "2nd")) }
+    var showCompletedTasks by remember { mutableStateOf(false) }
 
     Scaffold(
         topBar = {
@@ -141,11 +144,27 @@ fun TaskApp() {
                     }
                 }
 
+                Divider()
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Completed",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clickable { showCompletedTasks = !showCompletedTasks }
+                    )
+                    Icon(
+                        imageVector = if (showCompletedTasks) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                        contentDescription = "Toggle Completed Tasks",
+                        modifier = Modifier
+                            .clickable { showCompletedTasks = !showCompletedTasks }
+                    )
+                }
+
                 // Display completed tasks section only if there are completed tasks available
                 if (completedTasks.isNotEmpty()) {
                     Column {
-
-                        Divider()
 
                         TasksList(tasks = completedTasks) { taskName ->
                             val taskToMove = completedTasks.find { it == taskName }
