@@ -96,7 +96,7 @@ fun TaskApp() {
                     }
                 )
 
-                Divider(color = Color.Gray, thickness = 1.dp) // Divider line
+                Divider() // Divider line
 
             }
         },
@@ -144,11 +144,9 @@ fun TaskApp() {
                 // Display completed tasks section only if there are completed tasks available
                 if (completedTasks.isNotEmpty()) {
                     Column {
-                        Text(
-                            text = "Completed Tasks",
-                            style = MaterialTheme.typography.displayMedium,
-                            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
-                        )
+
+                        Divider()
+
                         TasksList(tasks = completedTasks) { taskName ->
                             val taskToMove = completedTasks.find { it == taskName }
                             if (taskToMove != null) {
