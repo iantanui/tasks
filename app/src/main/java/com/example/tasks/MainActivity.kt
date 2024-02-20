@@ -132,14 +132,14 @@ fun TaskApp() {
                 }
 
                 // Display incomplete
-                TasksList(tasks = incompleteTasks, onTaskCompleted = { taskName ->
+                TasksList(tasks = incompleteTasks) { taskName ->
                     // Move completed tasks to completedTasks list
                     val taskToMove = incompleteTasks.find { it == taskName }
                     if (taskToMove != null) {
                         incompleteTasks = incompleteTasks - taskToMove
                         completedTasks = listOf(taskName) + completedTasks
                     }
-                })
+                }
 
                 // Display completed tasks section only if there are completed tasks available
                 if (completedTasks.isNotEmpty()) {
@@ -149,7 +149,13 @@ fun TaskApp() {
                             style = MaterialTheme.typography.displayMedium,
                             modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                         )
-                        TasksList(tasks = completedTasks, onTaskCompleted = {})
+                        TasksList(tasks = completedTasks) { taskName ->
+                            val taskToMove = completedTasks.find { it == taskName }
+                            if (taskToMove != null) {
+                                completedTasks = completedTasks - taskToMove
+                                incompleteTasks = incompleteTasks + taskName
+                            }
+                        }
                     }
                 }
             }
@@ -219,12 +225,13 @@ fun TaskItem(taskName: String, isCompleted: Boolean, onTaskClicked: () -> Unit) 
             if (isCompleted) {
                 Icon(
                     imageVector = Icons.Default.CheckCircle,
-                    contentDescription = "Completed"
+                    contentDescription = "Completed",
+                    tint = Color.Green
                 )
             } else {
                 Box(
                     modifier = Modifier
-                        .clickable { onTaskClicked() }
+                        .clickable(onClick = onTaskClicked)
                         .size(20.dp)
                         .background(color = Color.Transparent, shape = CircleShape)
                         .border(width = 1.dp, color = Color.Gray, shape = CircleShape)
