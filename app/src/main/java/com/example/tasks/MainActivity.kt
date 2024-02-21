@@ -20,14 +20,15 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
-import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FabPosition
 import androidx.compose.material3.FloatingActionButton
@@ -119,64 +120,80 @@ fun TaskApp() {
                 )
             }
         },
-        floatingActionButtonPosition = FabPosition.End,
-        content = {
-            Column(
-                modifier = Modifier
-                    .padding(top = 60.dp)
-            ) {
-                if (isAddTaskDialogOpen) {
-                    AddTaskDialog(
-                        onTaskAdded = { newTask ->
-                            incompleteTasks = listOf(newTask) + incompleteTasks
-                            isAddTaskDialogOpen = false
-                        },
-                        onDismiss = { isAddTaskDialogOpen = false }
+        floatingActionButtonPosition = FabPosition.End
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(top = 60.dp)
+        ) {
+            if (isAddTaskDialogOpen) {
+                AddTaskDialog(
+                    onTaskAdded = { newTask ->
+                        incompleteTasks = listOf(newTask) + incompleteTasks
+                        isAddTaskDialogOpen = false
+                    },
+                    onDismiss = { isAddTaskDialogOpen = false }
 
-                    )
-                }
+                )
+            }
 
-                // Display incomplete
-                TasksList(tasks = incompleteTasks) { taskName ->
+            // Display incomplete
+            TasksList(tasks = incompleteTasks,
+                onTaskCompleted = { taskName ->
                     // Move completed tasks to completedTasks list
                     val taskToMove = incompleteTasks.find { it == taskName }
                     if (taskToMove != null) {
                         incompleteTasks = incompleteTasks - taskToMove
                         completedTasks = listOf(taskName) + completedTasks
                     }
+                },
+                onEditClicked = { taskName ->
+                    //
+                },
+                onDeleteClicked = {
+                    //
                 }
+            )
 
-                Divider()
+            Divider()
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Text(
-                        text = "Completed",
-                        style = MaterialTheme.typography.labelMedium,
-                        modifier = Modifier
-                            .padding(horizontal = 16.dp)
-                            .clickable { showCompletedTasks = !showCompletedTasks }
-                    )
-                    Icon(
-                        imageVector = if (showCompletedTasks) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                        contentDescription = "Toggle Completed Tasks",
-                        modifier = Modifier
-                            .clickable { showCompletedTasks = !showCompletedTasks }
-                    )
-                }
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                Text(
+                    text = "Completed",
+                    style = MaterialTheme.typography.labelMedium,
+                    modifier = Modifier
+                        .padding(horizontal = 16.dp)
+                        .clickable { showCompletedTasks = !showCompletedTasks }
+                )
+                Icon(
+                    imageVector = if (showCompletedTasks) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                    contentDescription = "Toggle Completed Tasks",
+                    modifier = Modifier
+                        .clickable { showCompletedTasks = !showCompletedTasks }
+                )
+            }
 
-                // Display completed tasks section only if there are completed tasks available
-                if (completedTasks.isNotEmpty()) {
-                    TasksList(tasks = completedTasks) { taskName ->
+            // Display completed tasks section only if there are completed tasks available
+            if (completedTasks.isNotEmpty()) {
+                TasksList(
+                    tasks = completedTasks,
+                    onTaskCompleted = { taskName ->
                         val taskToMove = completedTasks.find { it == taskName }
                         if (taskToMove != null) {
                             completedTasks = completedTasks - taskToMove
-                            incompleteTasks = incompleteTasks + taskName
+                            incompleteTasks = incompleteTasks + listOf(taskName)
                         }
+                    },
+                    onEditClicked = {
+                        //
+                    },
+                    onDeleteClicked = {
+                        //
                     }
-                }
+                )
             }
         }
-    )
+    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -210,32 +227,46 @@ fun AddTaskDialog(onTaskAdded: (String) -> Unit, onDismiss: () -> Unit) {
 }
 
 @Composable
-fun TasksList(tasks: List<String>, onTaskCompleted: (String) -> Unit) {
+fun TasksList(
+    tasks: List<String>,
+    onTaskCompleted: (String) -> Unit,
+    onEditClicked: (String) -> Unit,
+    onDeleteClicked: (String) -> Unit,
+) {
     LazyColumn(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
         items(tasks.size) { index ->
+            val task = tasks[index]
             TaskItem(
-                taskName = tasks[index],
+                taskName = task,
                 isCompleted = false,
-                onTaskClicked = { onTaskCompleted(tasks[index]) }
+                onTaskClicked = { onTaskCompleted(task) },
+                onEditClicked = { onEditClicked(task) },
+                onDeleteClicked = { onDeleteClicked(task) }
             )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TaskItem(taskName: String, isCompleted: Boolean, onTaskClicked: () -> Unit) {
-    var isEditing by remember { mutableStateOf(false) }
-    var editedTaskName by remember { mutableStateOf(taskName) }
+fun TaskItem(
+    taskName: String,
+    isCompleted: Boolean,
+    onTaskClicked: () -> Unit,
+    onEditClicked: (String) -> Unit,
+    onDeleteClicked: (String) -> Unit,
+) {
+
+    var isMenuOpen by remember { mutableStateOf(false) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
+            .clickable(onClick = onTaskClicked)
     ) {
         Row(
             modifier = Modifier
@@ -251,7 +282,6 @@ fun TaskItem(taskName: String, isCompleted: Boolean, onTaskClicked: () -> Unit) 
             } else {
                 Box(
                     modifier = Modifier
-                        .clickable(onClick = onTaskClicked)
                         .size(20.dp)
                         .background(color = Color.Transparent, shape = CircleShape)
                         .border(width = 1.dp, color = Color.Gray, shape = CircleShape)
@@ -259,28 +289,31 @@ fun TaskItem(taskName: String, isCompleted: Boolean, onTaskClicked: () -> Unit) 
             }
 
             // Task name (editable)
-            if (isEditing) {
-                TextField(
-                    value = editedTaskName,
-                    onValueChange = { editedTaskName = it },
-                    modifier = Modifier.weight(1f),
-                    singleLine = true,
-                    textStyle = MaterialTheme.typography.bodyMedium
-                )
-                IconButton(onClick = { isEditing = false }) {
-                    Icon(Icons.Default.Done, contentDescription = "Done")
-                }
-            } else {
-                Text(
-                    text = taskName,
-                    modifier = Modifier
-                        .padding(16.dp)
-                        .weight(1f),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-                IconButton(onClick = { isEditing = true }) {
-                    Icon(Icons.Default.Edit, contentDescription = "Edit")
-                }
+            Text(
+                text = taskName,
+                modifier = Modifier
+                    .padding(16.dp)
+                    .weight(1f),
+                style = MaterialTheme.typography.bodyMedium
+            )
+
+            // Dropdown Menu button
+            IconButton(onClick = { isMenuOpen = !isMenuOpen }) {
+                Icon(Icons.Default.MoreVert, contentDescription = "More")
+            }
+
+            // Dropdown menu
+            DropdownMenu(
+                expanded = isMenuOpen,
+                onDismissRequest = { isMenuOpen = false }
+            ) {
+                DropdownMenuItem(
+                    text = { "Edit" },
+                    onClick = { onEditClicked(taskName); isMenuOpen = false })
+
+                DropdownMenuItem(
+                    text = { "Delete" },
+                    onClick = { onDeleteClicked(taskName); isMenuOpen = false })
             }
         }
     }
