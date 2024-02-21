@@ -20,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material.icons.filled.MoreVert
@@ -49,6 +51,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import com.example.tasks.ui.theme.TasksTheme
 
@@ -305,15 +308,16 @@ fun TaskItem(
             // Dropdown menu
             DropdownMenu(
                 expanded = isMenuOpen,
-                onDismissRequest = { isMenuOpen = false }
+                onDismissRequest = { isMenuOpen = false },
+                offset = DpOffset(x = (-80).dp, y = 0.dp)
             ) {
-                DropdownMenuItem(
-                    text = { "Edit" },
-                    onClick = { onEditClicked(taskName); isMenuOpen = false })
+                IconButton(onClick = { onEditClicked(taskName); isMenuOpen = false }) {
+                    Icon(Icons.Default.Edit, contentDescription = "edit")
+                }
 
-                DropdownMenuItem(
-                    text = { "Delete" },
-                    onClick = { onDeleteClicked(taskName); isMenuOpen = false })
+                IconButton(onClick = { onDeleteClicked(taskName); isMenuOpen = false }) {
+                    Icon(Icons.Default.Delete, contentDescription = "delete")
+                }
             }
         }
     }
