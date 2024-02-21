@@ -20,6 +20,8 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Done
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
 import androidx.compose.material3.AlertDialog
@@ -155,7 +157,7 @@ fun TaskApp() {
                             .clickable { showCompletedTasks = !showCompletedTasks }
                     )
                     Icon(
-                        imageVector = if (showCompletedTasks) Icons.Default.KeyboardArrowDown else Icons.Default.KeyboardArrowUp,
+                        imageVector = if (showCompletedTasks) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = "Toggle Completed Tasks",
                         modifier = Modifier
                             .clickable { showCompletedTasks = !showCompletedTasks }
@@ -164,14 +166,11 @@ fun TaskApp() {
 
                 // Display completed tasks section only if there are completed tasks available
                 if (completedTasks.isNotEmpty()) {
-                    Column {
-
-                        TasksList(tasks = completedTasks) { taskName ->
-                            val taskToMove = completedTasks.find { it == taskName }
-                            if (taskToMove != null) {
-                                completedTasks = completedTasks - taskToMove
-                                incompleteTasks = incompleteTasks + taskName
-                            }
+                    TasksList(tasks = completedTasks) { taskName ->
+                        val taskToMove = completedTasks.find { it == taskName }
+                        if (taskToMove != null) {
+                            completedTasks = completedTasks - taskToMove
+                            incompleteTasks = incompleteTasks + taskName
                         }
                     }
                 }
@@ -227,8 +226,12 @@ fun TasksList(tasks: List<String>, onTaskCompleted: (String) -> Unit) {
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TaskItem(taskName: String, isCompleted: Boolean, onTaskClicked: () -> Unit) {
+    var isEditing by remember { mutableStateOf(false) }
+    var editedTaskName by remember { mutableStateOf(taskName) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -255,11 +258,30 @@ fun TaskItem(taskName: String, isCompleted: Boolean, onTaskClicked: () -> Unit) 
                 )
             }
 
-            Text(
-                text = taskName,
-                modifier = Modifier.padding(16.dp),
-                style = MaterialTheme.typography.bodyMedium
-            )
+            // Task name (editable)
+            if (isEditing) {
+                TextField(
+                    value = editedTaskName,
+                    onValueChange = { editedTaskName = it },
+                    modifier = Modifier.weight(1f),
+                    singleLine = true,
+                    textStyle = MaterialTheme.typography.bodyMedium
+                )
+                IconButton(onClick = { isEditing = false }) {
+                    Icon(Icons.Default.Done, contentDescription = "Done")
+                }
+            } else {
+                Text(
+                    text = taskName,
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .weight(1f),
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                IconButton(onClick = { isEditing = true }) {
+                    Icon(Icons.Default.Edit, contentDescription = "Edit")
+                }
+            }
         }
     }
 }
