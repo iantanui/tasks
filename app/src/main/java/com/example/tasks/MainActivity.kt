@@ -266,7 +266,6 @@ fun TaskItem(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
-            .clickable(onClick = onTaskClicked)
     ) {
         Row(
             modifier = Modifier
@@ -282,6 +281,7 @@ fun TaskItem(
             } else {
                 Box(
                     modifier = Modifier
+                        .clickable(onClick = onTaskClicked)
                         .size(20.dp)
                         .background(color = Color.Transparent, shape = CircleShape)
                         .border(width = 1.dp, color = Color.Gray, shape = CircleShape)
