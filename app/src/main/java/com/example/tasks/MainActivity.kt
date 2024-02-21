@@ -147,7 +147,7 @@ fun TaskApp() {
                         completedTasks = listOf(taskName) + completedTasks
                     }
                 },
-                onEditClicked = { taskName ->
+                onEditClicked = {
                     //
                 },
                 onDeleteClicked = {
