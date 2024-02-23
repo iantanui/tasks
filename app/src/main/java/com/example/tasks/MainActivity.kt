@@ -166,26 +166,26 @@ fun TaskApp() {
                 onDeleteClicked = onDeleteIncompleteClicked
             )
 
-            Divider()
-
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Completed",
-                    style = MaterialTheme.typography.labelMedium,
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .clickable { showCompletedTasks = !showCompletedTasks }
-                )
-                Icon(
-                    imageVector = if (showCompletedTasks) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
-                    contentDescription = "Toggle Completed Tasks",
-                    modifier = Modifier
-                        .clickable { showCompletedTasks = !showCompletedTasks }
-                )
-            }
-
             // Display completed tasks section only if there are completed tasks available
             if (completedTasks.isNotEmpty()) {
+                Divider()
+
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Text(
+                        text = "Completed",
+                        style = MaterialTheme.typography.labelMedium,
+                        modifier = Modifier
+                            .padding(horizontal = 16.dp)
+                            .clickable { showCompletedTasks = !showCompletedTasks }
+                    )
+                    Icon(
+                        imageVector = if (showCompletedTasks) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
+                        contentDescription = "Toggle Completed Tasks",
+                        modifier = Modifier
+                            .clickable { showCompletedTasks = !showCompletedTasks }
+                    )
+                }
+
                 TasksList(
                     tasks = completedTasks,
                     onTaskCompleted = { taskName ->
