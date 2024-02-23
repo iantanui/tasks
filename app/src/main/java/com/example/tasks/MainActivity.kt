@@ -2,13 +2,11 @@ package com.example.tasks
 
 import android.annotation.SuppressLint
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -17,12 +15,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.KeyboardArrowDown
 import androidx.compose.material.icons.filled.KeyboardArrowUp
@@ -281,6 +279,7 @@ fun TaskItem(
 ) {
 
     var isMenuOpen by remember { mutableStateOf(false) }
+    val completed = remember { mutableStateOf(isCompleted) }
 
     Card(
         modifier = Modifier
@@ -292,19 +291,28 @@ fun TaskItem(
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            if (isCompleted) {
+            // Done icon for completed, circle for incomplete
+            if (completed.value) {
                 Icon(
-                    imageVector = Icons.Default.CheckCircle,
+                    imageVector = Icons.Default.Done,
                     contentDescription = "Completed",
-                    tint = Color.Green
+                    tint = Color.Green,
+                    modifier = Modifier
+                        .size(20.dp)
                 )
             } else {
-                Box(
+                // incomplete
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Incomplete",
+                    tint = Color.Gray,
                     modifier = Modifier
-                        .clickable(onClick = onTaskClicked)
                         .size(20.dp)
-                        .background(color = Color.Transparent, shape = CircleShape)
-                        .border(width = 1.dp, color = Color.Gray, shape = CircleShape)
+                        .clickable {
+                            completed.value = !completed.value
+                            onTaskClicked()
+                            Log.d("TaskItem","Icon clicked. Completed: ${completed.value}")
+                        }
                 )
             }
 
@@ -318,7 +326,7 @@ fun TaskItem(
             )
 
             // Dropdown Menu button
-            IconButton(onClick = { isMenuOpen = !isMenuOpen }) {
+            IconButton(onClick = { isMenuOpen = true }) {
                 Icon(Icons.Default.MoreVert, contentDescription = "More")
             }
 
