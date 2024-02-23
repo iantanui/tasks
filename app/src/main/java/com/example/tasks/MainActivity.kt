@@ -7,9 +7,11 @@ import androidx.activity.compose.setContent
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -170,7 +172,10 @@ fun TaskApp() {
             if (completedTasks.isNotEmpty()) {
                 Divider()
 
-                Row(verticalAlignment = Alignment.CenterVertically) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
                     Text(
                         text = "Completed",
                         style = MaterialTheme.typography.labelMedium,
@@ -178,6 +183,9 @@ fun TaskApp() {
                             .padding(horizontal = 16.dp)
                             .clickable { showCompletedTasks = !showCompletedTasks }
                     )
+
+                    Spacer(modifier = Modifier.weight(1f))
+
                     Icon(
                         imageVector = if (showCompletedTasks) Icons.Default.KeyboardArrowUp else Icons.Default.KeyboardArrowDown,
                         contentDescription = "Toggle Completed Tasks",
