@@ -194,20 +194,23 @@ fun TaskApp() {
                     )
                 }
 
-                TasksList(
-                    tasks = completedTasks,
-                    onTaskCompleted = { taskName ->
-                        val taskToMove = completedTasks.find { it == taskName }
-                        if (taskToMove != null) {
-                            completedTasks = completedTasks - taskToMove
-                            incompleteTasks = incompleteTasks + listOf(taskName)
-                        }
-                    },
-                    onEditClicked = {
-                        //
-                    },
-                    onDeleteClicked = onDeleteCompletedClicked
-                )
+                // Display complete tasks is showCompletedTasks is true
+                if (showCompletedTasks) {
+                    TasksList(
+                        tasks = completedTasks,
+                        onTaskCompleted = { taskName ->
+                            val taskToMove = completedTasks.find { it == taskName }
+                            if (taskToMove != null) {
+                                completedTasks = completedTasks - taskToMove
+                                incompleteTasks = incompleteTasks + listOf(taskName)
+                            }
+                        },
+                        onEditClicked = {
+                            //
+                        },
+                        onDeleteClicked = onDeleteCompletedClicked
+                    )
+                }
             }
         }
     }
