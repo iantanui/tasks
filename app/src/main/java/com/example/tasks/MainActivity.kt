@@ -76,9 +76,19 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun TaskApp() {
     var isAddTaskDialogOpen by remember { mutableStateOf(false) }
-    var completedTasks by remember { mutableStateOf(listOf("helo", "jhhdgyg")) }
-    var incompleteTasks by remember { mutableStateOf(listOf("1st", "2nd")) }
+    var completedTasks by remember { mutableStateOf(listOf<String>()) }
+    var incompleteTasks by remember { mutableStateOf(listOf<String>()) }
     var showCompletedTasks by remember { mutableStateOf(false) }
+
+    // callback for incomplete tasks
+    val onDeleteIncompleteClicked: (String) -> Unit = { taskName ->
+        incompleteTasks = incompleteTasks.filter { it != taskName }
+    }
+
+    // callback  for complete tasks
+    val onDeleteCompletedClicked: (String) -> Unit = { taskName ->
+        completedTasks = completedTasks.filter { it != taskName }
+    }
 
     Scaffold(
         topBar = {
@@ -140,7 +150,8 @@ fun TaskApp() {
             }
 
             // Display incomplete
-            TasksList(tasks = incompleteTasks,
+            TasksList(
+                tasks = incompleteTasks,
                 onTaskCompleted = { taskName ->
                     // Move completed tasks to completedTasks list
                     val taskToMove = incompleteTasks.find { it == taskName }
@@ -152,9 +163,7 @@ fun TaskApp() {
                 onEditClicked = {
                     //
                 },
-                onDeleteClicked = {
-                    //
-                }
+                onDeleteClicked = onDeleteIncompleteClicked
             )
 
             Divider()
@@ -189,9 +198,7 @@ fun TaskApp() {
                     onEditClicked = {
                         //
                     },
-                    onDeleteClicked = {
-                        //
-                    }
+                    onDeleteClicked = onDeleteCompletedClicked
                 )
             }
         }
@@ -258,8 +265,8 @@ fun TaskItem(
     taskName: String,
     isCompleted: Boolean,
     onTaskClicked: () -> Unit,
-    onEditClicked: (String) -> Unit,
-    onDeleteClicked: (String) -> Unit,
+    onEditClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
 ) {
 
     var isMenuOpen by remember { mutableStateOf(false) }
@@ -310,11 +317,11 @@ fun TaskItem(
                 onDismissRequest = { isMenuOpen = false },
                 offset = DpOffset(x = (-80).dp, y = 0.dp)
             ) {
-                IconButton(onClick = { onEditClicked(taskName); isMenuOpen = false }) {
+                IconButton(onClick = { onEditClicked(); isMenuOpen = false }) {
                     Icon(Icons.Default.Edit, contentDescription = "edit")
                 }
 
-                IconButton(onClick = { onDeleteClicked(taskName); isMenuOpen = false }) {
+                IconButton(onClick = { onDeleteClicked(); isMenuOpen = false }) {
                     Icon(Icons.Default.Delete, contentDescription = "delete")
                 }
             }
