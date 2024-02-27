@@ -2,7 +2,6 @@ package com.example.tasks
 
 import android.annotation.SuppressLint
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.clickable
@@ -279,42 +278,34 @@ fun TaskItem(
 ) {
 
     var isMenuOpen by remember { mutableStateOf(false) }
-    val completed = remember { mutableStateOf(isCompleted) }
+    var completed by remember { mutableStateOf(isCompleted) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(8.dp)
     ) {
+
         Row(
             modifier = Modifier
                 .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically,
         ) {
-            // Done icon for completed, circle for incomplete
-            if (completed.value) {
-                Icon(
-                    imageVector = Icons.Default.Done,
-                    contentDescription = "Completed",
-                    tint = Color.Green,
-                    modifier = Modifier
-                        .size(20.dp)
-                )
-            } else {
-                // incomplete
-                Icon(
-                    imageVector = Icons.Default.Close,
-                    contentDescription = "Incomplete",
-                    tint = Color.Gray,
-                    modifier = Modifier
-                        .size(20.dp)
-                        .clickable {
-                            completed.value = !completed.value
-                            onTaskClicked()
-                            Log.d("TaskItem","Icon clicked. Completed: ${completed.value}")
-                        }
-                )
-            }
+            // Done icon for completed, done for incomplete
+            val icon = if (completed) Icons.Default.Done else Icons.Default.Close
+            val tint = if (completed) Color.Green else Color.Gray
+
+            Icon(
+                imageVector = icon,
+                contentDescription = if (completed) "Completed" else "Incomplete",
+                tint = tint,
+                modifier = Modifier
+                    .size(20.dp)
+                    .clickable {
+                        completed = !completed
+                        onTaskClicked()
+                    }
+            )
 
             // Task name (editable)
             Text(
